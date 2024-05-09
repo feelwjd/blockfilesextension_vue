@@ -1,36 +1,32 @@
 <template>
   <div>
-    <h3>가장 많이 추가된 확장자</h3>
-    <div v-for="extension in extensions" :key="extension.extensionIndex">
-      {{ extension.extensionName }}
+    <div v-for="extension in extensions" :key="extension.id">
+      <input type="checkbox" :id="`extension-${extension.id}`">
+      <label :for="`extension-${extension.id}`">{{ extension.extensionName }}</label>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue';
-import axios from 'axios';
-import { Extension } from '../interface/types';
+import {axiosInstance} from '../api/api';
 
 export default defineComponent({
-  name: 'TopExtensions',
   setup() {
-    const extensions = ref<Array<Extension>>([]);
+    const extensions = ref([]);
 
-    const fetchTopExtensions = async () => {
+    const fetchExtensions = async () => {
       try {
-        const response = await axios.get<Array<Extension>>('/extension/top');
+        const response = await axiosInstance.get(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/top');
         extensions.value = response.data;
       } catch (error) {
-        console.error("An error occurred while fetching top extensions: ", error);
+        console.error(error);
       }
     };
 
-    onMounted(fetchTopExtensions);
+    onMounted(fetchExtensions);
 
-    return {
-      extensions,
-    };
+    return { extensions };
   },
 });
 </script>
