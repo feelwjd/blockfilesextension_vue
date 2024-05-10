@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <button class="extension-chip" v-for="extension in extensions" :key="extension.historyIndex">
       {{ extension.extensionName }}
       <span class="delete-btn" @click.stop="removeExtension(extension.extensionIndex)">X</span>
@@ -55,4 +55,10 @@ export default defineComponent({
   margin-left: 5px;
   color: black;
 }
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 </style>
