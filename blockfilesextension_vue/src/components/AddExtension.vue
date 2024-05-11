@@ -9,7 +9,6 @@
 import {computed, defineComponent, inject, onMounted, ref} from 'vue';
 import {axiosInstance} from '../api/api';
 import { Extension } from '../interface/types';
-import {c} from "vite/dist/node/types.d-aGj9QkWt";
 
 export default defineComponent({
   props: {
