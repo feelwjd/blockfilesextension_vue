@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, inject, onMounted, ref} from 'vue';
+import {defineComponent, onMounted, ref} from 'vue';
 import {axiosInstance} from '../api/api';
 import { Extension } from '../interface/types';
 
@@ -14,12 +14,11 @@ export default defineComponent({
   props: {
     maxExtensions: {
       type: Number,
-      default: 20
+      default: 200
     },
   },
   name: 'AddExtension',
   setup(props, { emit }) {
-    const extensions =inject('extensions');
     const input = ref('');
     const isButtonDisabled = ref(false);
 
@@ -50,7 +49,7 @@ export default defineComponent({
       }
     });
 
-    const handleInput = function(event) {
+    const handleInput = function( this : any, event : any) {
       const inputValue = event.target.value;
       const lastValue = this.input;
 
@@ -64,7 +63,7 @@ export default defineComponent({
       }
     };
 
-    const handleKeydown = (event) => {
+    const handleKeydown = (event : any) => {
       if ((event.key === ' ' || (event.key === '.' && event.target.selectionStart !== 0)) &&
           !(event.key === 'ArrowDown' || event.key === 'ArrowUp' || event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
         event.preventDefault();
@@ -97,9 +96,9 @@ export default defineComponent({
               extension.extensionName === extensionInput);
           if (!extensionExists) {
 
-            const addResponse = await axiosInstance.post<Extension>(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/add', { extensionName: extensionInput });
-            const extensionIndex : bigint= addResponse.data.body.data;
-            const addHistoryResponse = await axiosInstance.post<bigint>(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/addHistory', { extensionIndex: extensionIndex});
+            const addResponse : any = await axiosInstance.post<Extension>(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/add', { extensionName: extensionInput });
+            const extensionIndex : bigint = addResponse.data.body.data;
+            const addHistoryResponse : any = await axiosInstance.post<bigint>(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/addHistory', { extensionIndex: extensionIndex});
 
             if(addHistoryResponse.data.header.status === 200) {
               console.log('History successfully added');

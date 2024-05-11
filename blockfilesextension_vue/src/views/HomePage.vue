@@ -24,8 +24,6 @@ import AddExtension from '../components/AddExtension.vue';
 import ExtensionList from '../components/ExtensionList.vue';
 import TopExtensions from '../components/TopExtensions.vue';
 import FileUpload from "../components/FileUpload.vue";
-
-const MAX_EXTENSIONS = 20;
 export default defineComponent({
   name: 'HomePage',
   components: {
@@ -35,7 +33,7 @@ export default defineComponent({
     TopExtensions
   },
   methods: {
-    refreshList(newExtension) { // add parameter here
+    refreshList(this : any, newExtension :any) { // add parameter here
       this.$refs.extensionList.fetchExtensions();
       this.$refs.addExtension.fetchExtensions();
       this.$refs.topExtensionList.fetchExtensions(newExtension);

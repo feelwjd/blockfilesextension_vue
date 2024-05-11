@@ -37,6 +37,5 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.file-upload-container {
-}
+
 </style>

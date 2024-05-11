@@ -16,19 +16,19 @@ export default defineComponent({
   props: {
     maxExtensions: {
       type: Number,
-      default: 20
+      default: 200
     }
   },
   setup(_, { emit }) {
-    const extensions = ref([]);
+    const extensions : any = ref([]);
 
     const fetchExtensions = async () => {
       try {
-        const allExtensionsResponse = await axiosInstance.get(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/top');
-        const allExtensions = allExtensionsResponse.data.body.data;
+        const allExtensionsResponse : any = await axiosInstance.get(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/top');
+        const allExtensions : any = allExtensionsResponse.data.body.data;
 
-        const sessionExtensionsResponse = await axiosInstance.get(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/history');
-        const sessionExtensions = sessionExtensionsResponse.data.body.data;
+        const sessionExtensionsResponse : any = await axiosInstance.get(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/history');
+        const sessionExtensions : any = sessionExtensionsResponse.data.body.data;
 
         // filter out top extensions
         extensions.value = sessionExtensions.filter(sessionExtension => {
@@ -42,7 +42,7 @@ export default defineComponent({
     };
     onMounted(fetchExtensions);
 
-    const removeExtension = async (extensionIndex) => {
+    const removeExtension : any = async (extensionIndex) => {
       try {
         await axiosInstance.post(`${import.meta.env.VITE_APP_API_BASE_URL}/task/extension/deleteHistory`, { extensionIndex: extensionIndex });
         extensions.value = extensions.value.filter(extension => extension.extensionIndex !== extensionIndex);

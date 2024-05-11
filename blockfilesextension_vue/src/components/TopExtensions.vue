@@ -14,9 +14,9 @@ import {Extension} from "../interface/types.ts";
 
 export default defineComponent({
   setup() {
-    const extensions = ref([]);
+    const extensions : any = ref([]);
 
-    const fetchExtensions = async (newExtension) => {
+    const fetchExtensions : any = async (newExtension) => {
       try {
         const response = await axiosInstance.get(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/top');
         extensions.value = response.data.body.data.map(extension => {
@@ -41,9 +41,9 @@ export default defineComponent({
         extension.checked = event.target.checked ? 'Y' : 'N';
 
         if(extension.checked === 'Y') {
-          const addResponse = await axiosInstance.post<Extension>(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/add', { extensionName: extension.extensionName });
+          const addResponse : any = await axiosInstance.post<Extension>(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/add', { extensionName: extension.extensionName });
           const extensionIndex : bigint= addResponse.data.body.data;
-          const addHistoryResponse = await axiosInstance.post<bigint>(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/addHistory', { extensionIndex: extensionIndex});
+          const addHistoryResponse : any = await axiosInstance.post<bigint>(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/addHistory', { extensionIndex: extensionIndex});
 
           if(addHistoryResponse.data.header.status === 200) {
             console.log('History successfully added');
@@ -51,15 +51,16 @@ export default defineComponent({
             console.log('Failed to add history');
           }
         } else {
-          const delHistoryResponse = await axiosInstance.post(`${import.meta.env.VITE_APP_API_BASE_URL}/task/extension/deleteHistory`, { extensionIndex: extension.extensionIndex });
+          const delHistoryResponse : any = await axiosInstance.post(`${import.meta.env.VITE_APP_API_BASE_URL}/task/extension/deleteHistory`, { extensionIndex: extension.extensionIndex });
           if(delHistoryResponse.data.header.status === 200) {
             console.log('History successfully deleted');
           } else {
             console.log('Failed to delete history');
           }
         }
-        const payload = { extensionIndex: extension.extensionIndex, checked: extension.checked };
-        const response = await axiosInstance.post(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/check', payload);
+        const payload : any = { extensionIndex: extension.extensionIndex, checked: extension.checked };
+        const response : any = await axiosInstance.post(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/check', payload);
+        console.log(response.data.body.data);
         fetchExtensions(null);
       } catch (error) {
         console.error(error);
