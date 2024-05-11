@@ -1,19 +1,55 @@
 <template>
   <div class="container">
     <input :value="input" @input="handleInput" @keydown.space.prevent @keydown="handleKeydown" type="text" placeholder="확장자 입력" maxlength="20"/>
-    <button @click="addExtension" class="add-button">+추가</button>
+    <button :disabled="isButtonDisabled" @click="addExtension" class="add-button">+추가</button>
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from 'vue';
+import {computed, defineComponent, inject, onMounted, ref} from 'vue';
 import {axiosInstance} from '../api/api';
 import { Extension } from '../interface/types';
+import {c} from "vite/dist/node/types.d-aGj9QkWt";
 
 export default defineComponent({
+  props: {
+    maxExtensions: {
+      type: Number,
+      default: 20
+    },
+  },
   name: 'AddExtension',
-  setup(_, { emit }) {
+  setup(props, { emit }) {
+    const extensions =inject('extensions');
     const input = ref('');
+    const isButtonDisabled = ref(false);
+
+    const fetchExtensions = (async () => {
+      try {
+        const historyResponse = await axiosInstance.get(
+            import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/history',
+            { params: {} },
+        );
+        const allExtensionsResponse = await axiosInstance.get(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/top');
+        const allExtensions = allExtensionsResponse.data.body.data;
+
+        const historyExtensions = historyResponse.data.body.data;
+
+        const num = historyExtensions.filter(sessionExtension => {
+          const isTopExtension = allExtensions.some(topExtension => topExtension.extensionIndex === sessionExtension.extensionIndex);
+          return !isTopExtension;
+        }).length;
+        if (num >= props.maxExtensions) {
+          isButtonDisabled.value = true;
+          console.log("disabled true");
+        } else {
+          isButtonDisabled.value = false;
+          console.log("disabled false");
+        }
+      } catch (error) {
+        console.error("히스토리 조회 중 오류가 발생했습니다.: ", error);
+      }
+    });
 
     const handleInput = function(event) {
       const inputValue = event.target.value;
@@ -66,7 +102,7 @@ export default defineComponent({
             const extensionIndex : bigint= addResponse.data.body.data;
             const addHistoryResponse = await axiosInstance.post<bigint>(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/addHistory', { extensionIndex: extensionIndex});
 
-            if(addHistoryResponse.status === 200) {
+            if(addHistoryResponse.data.header.status === 200) {
               console.log('History successfully added');
               emit('extension-added', extensionInput);
             } else {
@@ -74,7 +110,6 @@ export default defineComponent({
             }
 
             input.value = '';
-            console.log(addResponse.data);
           } else {
             alert('이미 존재하는 확장자입니다.');
           }
@@ -83,9 +118,11 @@ export default defineComponent({
         }
       }
     };
-
+    onMounted(fetchExtensions);
     return {
       input,
+      isButtonDisabled,
+      fetchExtensions,
       handleInput,
       addExtension,
       handleKeydown,

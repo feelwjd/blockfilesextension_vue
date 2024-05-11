@@ -1,6 +1,7 @@
 export interface Extension {
     extensionIndex: number;
     extensionName: string;
+    selectCount: number;
     createDate: string;
     updateDate: string;
 }
@@ -11,7 +12,6 @@ export interface ExtensionHistory {
     extensionIndex: string;
     extensionName: string;
     checked: string;
-    selectCount: number;
     createDate: string;
     updateDate: string;
 }

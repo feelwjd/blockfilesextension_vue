@@ -4,6 +4,7 @@
       {{ extension.extensionName }}
       <span class="delete-btn" @click.stop="removeExtension(extension.extensionIndex)">X</span>
     </button>
+    <strong>{{ extensions.length }}/{{ maxExtensions }}</strong>
   </div>
 </template>
 
@@ -12,13 +13,29 @@ import { defineComponent, ref, onMounted } from 'vue';
 import {axiosInstance} from '../api/api';
 
 export default defineComponent({
-  setup() {
+  props: {
+    maxExtensions: {
+      type: Number,
+      default: 20
+    }
+  },
+  setup(_, { emit }) {
     const extensions = ref([]);
 
     const fetchExtensions = async () => {
       try {
-        const response = await axiosInstance.get(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/history');
-        extensions.value = response.data.body.data;
+        const allExtensionsResponse = await axiosInstance.get(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/top');
+        const allExtensions = allExtensionsResponse.data.body.data;
+
+        const sessionExtensionsResponse = await axiosInstance.get(import.meta.env.VITE_APP_API_BASE_URL + '/task/extension/history');
+        const sessionExtensions = sessionExtensionsResponse.data.body.data;
+
+        // filter out top extensions
+        extensions.value = sessionExtensions.filter(sessionExtension => {
+          const isTopExtension = allExtensions.some(topExtension => topExtension.extensionIndex === sessionExtension.extensionIndex);
+          return !isTopExtension;
+        });
+
       } catch (error) {
         console.error(error);
       }
@@ -29,6 +46,7 @@ export default defineComponent({
       try {
         await axiosInstance.post(`${import.meta.env.VITE_APP_API_BASE_URL}/task/extension/deleteHistory`, { extensionIndex: extensionIndex });
         extensions.value = extensions.value.filter(extension => extension.extensionIndex !== extensionIndex);
+        emit('extension-removed');
       } catch (error) {
         console.error(error);
       }
